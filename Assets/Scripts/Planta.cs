@@ -3,6 +3,25 @@ using UnityEngine;
 
 public class Planta : MonoBehaviour
 {
+
+
+    [Header("Vida de la planta")]
+    public int vida = 3;
+
+    public void RecibirDano(int dano)
+    {
+        if (vida <= 0)
+            return;
+
+        vida -= dano;
+
+        if (vida <= 0)
+        {
+            vida = 0;
+            gameObject.SetActive(false);
+            Debug.Log("Una planta ha sido destruida");
+        }
+    }
     [Header("Datos de la planta")]
     public float alcance = 10f;
     public float tiempoEntreAtaques = 1f;
