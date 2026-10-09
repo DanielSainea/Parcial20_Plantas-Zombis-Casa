@@ -19,19 +19,24 @@ public class Simulate : MonoBehaviour
 
     void Update()
     {
+        // Comprobar que exista la casa.
         if (casa == null)
             return;
 
+        // Finalizar la simulacion si destruyen la casa.
         if (casa.vida <= 0)
         {
             casa.Simulate();
             return;
         }
 
+        // Asegurar que exista la lista de zombis.
         if (zombis == null)
+        {
             zombis = new List<Zombi>();
+        }
 
-        // Las plantas disparan a los zombis.
+        // Actualizar las plantas y sus objetivos.
         if (plantas != null)
         {
             foreach (Planta planta in plantas)
@@ -45,7 +50,7 @@ public class Simulate : MonoBehaviour
             }
         }
 
-        // Los zombis buscan plantas y atacan la casa.
+        // Actualizar el movimiento y los ataques de los zombis.
         foreach (Zombi zombi in zombis)
         {
             if (zombi == null ||
@@ -54,19 +59,21 @@ public class Simulate : MonoBehaviour
 
             zombi.casa = casa;
             zombi.plantas = plantas;
+
             zombi.Simulate();
         }
 
-        // Retirar los zombis muertos de la lista.
+        // Eliminar zombis muertos o desactivados de la lista.
         zombis.RemoveAll(z =>
             z == null ||
             z.vida <= 0 ||
             !z.gameObject.activeInHierarchy
         );
 
+        // Actualizar el estado de la casa.
         casa.Simulate();
 
-        // El generador no depende de la lista de zombis vivos.
+        // Generar zombis independientemente de las muertes.
         tiempoActual += Time.deltaTime;
 
         if (tiempoActual >= tiempoEntreApariciones)
@@ -78,66 +85,76 @@ public class Simulate : MonoBehaviour
 
     void CrearZombi()
     {
+        // Comprobar el prefab.
         if (prefabZombi == null)
         {
             Debug.LogError(
-                "No hay prefab de zombi asignado en Simulate."
+                "ERROR: No hay prefab de zombi asignado."
             );
             return;
         }
 
+        // Comprobar los puntos de aparicion.
         if (puntosAparicion == null ||
             puntosAparicion.Length == 0)
         {
             Debug.LogError(
-                "No hay puntos de aparicion asignados en Simulate."
+                "ERROR: No hay puntos de aparicion asignados."
             );
             return;
         }
 
-        // Buscar el siguiente punto válido.
+        // Buscar un punto de aparicion valido.
         Transform punto = null;
 
         for (int i = 0; i < puntosAparicion.Length; i++)
         {
             if (siguienteFila >= puntosAparicion.Length)
+            {
                 siguienteFila = 0;
+            }
 
-            punto = puntosAparicion[siguienteFila];
+            Transform candidato = puntosAparicion[siguienteFila];
+
             siguienteFila++;
 
-            if (punto != null)
+            if (candidato != null)
+            {
+                punto = candidato;
                 break;
+            }
         }
 
         if (punto == null)
         {
             Debug.LogError(
-                "Todos los puntos de aparicion estan vacios."
+                "ERROR: Todos los puntos de aparicion son nulos."
             );
             return;
         }
 
+        // Crear una instancia independiente del prefab.
         Zombi nuevoZombi = Instantiate(
             prefabZombi,
             punto.position,
             Quaternion.identity
         );
 
+        // Reiniciar vida y temporizador, y asignar referencias.
+        nuevoZombi.Inicializar(casa, plantas);
+
+        // Activar el nuevo zombi.
         nuevoZombi.gameObject.SetActive(true);
 
-        nuevoZombi.casa = casa;
-        nuevoZombi.plantas = plantas;
-
-        // Asegurar que el nuevo zombi se registre.
-        if (!zombis.Contains(nuevoZombi))
-            zombis.Add(nuevoZombi);
+        // Añadirlo a la lista de la simulacion.
+        zombis.Add(nuevoZombi);
 
         Debug.Log(
-            "Zombi creado: " + nuevoZombi.name +
+            "ZOMBI GENERADO: " + nuevoZombi.name +
+            " | Vida: " + nuevoZombi.vida +
             " | Activo: " +
             nuevoZombi.gameObject.activeInHierarchy +
-            " | Posicion: " + nuevoZombi.transform.position
+            " | Fila: " + (siguienteFila - 1)
         );
     }
 }
