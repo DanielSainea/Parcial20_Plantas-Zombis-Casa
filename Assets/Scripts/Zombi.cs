@@ -21,6 +21,13 @@ public class Zombi : MonoBehaviour
 
     private float tiempoActual = 0f;
 
+    private Collider2D miCollider;
+
+    private void Awake()
+    {
+        miCollider = GetComponent<Collider2D>();
+    }
+
     public void Simulate()
     {
         if (vida <= 0 || casa == null || casa.vida <= 0)
@@ -28,31 +35,27 @@ public class Zombi : MonoBehaviour
 
         Planta objetivo = BuscarPlanta();
 
-        // Si hay una planta delante, el zombi la ataca.
         if (objetivo != null)
         {
-            float distancia = transform.position.x -
-                              objetivo.transform.position.x;
+            float limitePlanta = ObtenerLimitePlanta(objetivo);
 
-            if (distancia <= distanciaAtaque)
+            if (transform.position.x > limitePlanta)
             {
-                AtacarPlanta(objetivo);
+                CaminarHasta(limitePlanta);
             }
             else
             {
-                Caminar();
+                AtacarPlanta(objetivo);
             }
 
             return;
         }
 
-        // Si no hay plantas, avanza hacia la casa.
-        float distanciaCasa = transform.position.x -
-                              casa.transform.position.x;
+        float limiteCasa = ObtenerLimiteCasa();
 
-        if (distanciaCasa > distanciaAtaque)
+        if (transform.position.x > limiteCasa)
         {
-            Caminar();
+            CaminarHasta(limiteCasa);
         }
         else
         {
@@ -68,15 +71,16 @@ public class Zombi : MonoBehaviour
 
     Planta BuscarPlanta()
     {
+        if (plantas == null || casa == null)
+            return null;
+
         Planta objetivo = null;
         float posicionMasCercana = float.MinValue;
 
-        if (plantas == null)
-            return null;
-
         foreach (Planta planta in plantas)
         {
-            if (planta == null || planta.vida <= 0 ||
+            if (planta == null ||
+                planta.vida <= 0 ||
                 !planta.gameObject.activeInHierarchy)
                 continue;
 
@@ -85,11 +89,10 @@ public class Zombi : MonoBehaviour
             );
 
             float posicionX = planta.transform.position.x;
-            float posicionCasa = casa.transform.position.x;
 
-            // La planta debe estar delante y en el mismo carril.
+            // Solo plantas delante del zombi y antes de la casa.
             if (posicionX < transform.position.x &&
-                posicionX > posicionCasa &&
+                posicionX > casa.transform.position.x &&
                 distanciaY < 0.4f)
             {
                 if (posicionX > posicionMasCercana)
@@ -103,14 +106,69 @@ public class Zombi : MonoBehaviour
         return objetivo;
     }
 
-    void Caminar()
+    float ObtenerLimitePlanta(Planta planta)
     {
-        transform.position += Vector3.left *
-                              velocidad * Time.deltaTime;
+        Collider2D colliderPlanta =
+            planta.GetComponent<Collider2D>();
+
+        float bordeDerecho;
+
+        if (colliderPlanta != null)
+        {
+            bordeDerecho = colliderPlanta.bounds.max.x;
+        }
+        else
+        {
+            bordeDerecho = planta.transform.position.x;
+        }
+
+        float anchoZombi = miCollider != null
+            ? miCollider.bounds.extents.x
+            : 0f;
+
+        return bordeDerecho + anchoZombi + distanciaAtaque;
+    }
+
+    float ObtenerLimiteCasa()
+    {
+        Collider2D colliderCasa =
+            casa.GetComponent<Collider2D>();
+
+        float bordeDerecho;
+
+        if (colliderCasa != null)
+        {
+            bordeDerecho = colliderCasa.bounds.max.x;
+        }
+        else
+        {
+            bordeDerecho = casa.transform.position.x;
+        }
+
+        float anchoZombi = miCollider != null
+            ? miCollider.bounds.extents.x
+            : 0f;
+
+        return bordeDerecho + anchoZombi + distanciaAtaque;
+    }
+
+    void CaminarHasta(float limiteX)
+    {
+        Vector3 posicion = transform.position;
+
+        posicion.x = Mathf.Max(
+            limiteX,
+            posicion.x - velocidad * Time.deltaTime
+        );
+
+        transform.position = posicion;
     }
 
     void AtacarPlanta(Planta planta)
     {
+        if (planta == null || planta.vida <= 0)
+            return;
+
         tiempoActual += Time.deltaTime;
 
         if (tiempoActual >= tiempoEntreAtaques)
@@ -122,7 +180,7 @@ public class Zombi : MonoBehaviour
 
     public void RecibirDano(int dano)
     {
-        if (vida <= 0)
+        if (vida <= 0 || dano <= 0)
             return;
 
         vida -= dano;
@@ -131,6 +189,8 @@ public class Zombi : MonoBehaviour
         {
             vida = 0;
             gameObject.SetActive(false);
+
+            Debug.Log("Un zombi ha sido eliminado");
         }
     }
 }

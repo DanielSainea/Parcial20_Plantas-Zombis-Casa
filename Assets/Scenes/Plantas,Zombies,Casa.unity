@@ -367,8 +367,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 932b0abb27dd0ee45bfdb9b8306ab4a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Planta
+  vida: 3
   alcance: 10
-  tiempoEntreAtaques: 1
+  tiempoEntreAtaques: 2
   prefabProyectil: {fileID: 7059675756719378313, guid: e6e2460632b36984ab53cf3eaad05024, type: 3}
   puntoDisparo: {fileID: 858678144}
   zombis:
@@ -696,7 +697,9 @@ MonoBehaviour:
   vida: 3
   velocidad: 1
   danoCasa: 1
+  danoPlanta: 1
   casa: {fileID: 1671732365}
+  plantas: []
   distanciaAtaque: 0.5
   tiempoEntreAtaques: 1
 --- !u!4 &1401942783
@@ -748,12 +751,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1401942780}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 497764b679d9a4b4e93c67e3bc99af13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovimientoZombi
-  velocidad: 1
 --- !u!61 &1401942786
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -784,7 +786,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -890,7 +892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965301cffedc0a84bb0550b98f1c0398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Casa
-  vida: 20
+  vida: 2
 --- !u!4 &1671732366
 Transform:
   m_ObjectHideFlags: 0
@@ -1112,12 +1114,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1981783369}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 497764b679d9a4b4e93c67e3bc99af13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovimientoZombi
-  velocidad: 1
 --- !u!114 &1981783374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1133,7 +1134,9 @@ MonoBehaviour:
   vida: 3
   velocidad: 1
   danoCasa: 1
+  danoPlanta: 1
   casa: {fileID: 1671732365}
+  plantas: []
   distanciaAtaque: 0.5
   tiempoEntreAtaques: 1
 --- !u!4 &1981783375
