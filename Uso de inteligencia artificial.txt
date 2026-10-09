@@ -1,0 +1,3 @@
+ Uso de inteligencia artificial como herramienta de apoyo
+
+Durante el desarrollo de la simulación se utilizó inteligencia artificial como herramienta de apoyo para resolver dudas técnicas, revisar la lógica de programación y detectar posibles errores en los scripts de Unity. Su uso se enfocó en orientar la implementación de comportamientos como el movimiento de los zombis, los sistemas de ataque, la gestión de la vida de las entidades y la aparición de nuevos enemigos. Las sugerencias obtenidas se revisaron y adaptaron al proyecto mediante pruebas y ajustes realizados durante el desarrollo. La IA se empleó como recurso de consulta y asistencia técnica, complementando el proceso de aprendizaje y la implementación propia de la simulación.
